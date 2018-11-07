@@ -7,4 +7,5 @@ foreach($a as $v)
 {
     $trie->add($v);
 }
+var_dump($trie->search("a...s"));
 

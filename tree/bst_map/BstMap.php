@@ -271,6 +271,19 @@ class BstMap
         $this->__order($node->right);
 
     }
+    public function keySet()
+    {
+        return $this->__keySet($this->root,[]);
+    }
+    private function __keySet($node , $res)
+    {
+        if($node == null)
+            return $res;
+        $res[] = $node->key;
+        $left = $this->__keySet($node->left, $res);
+        $right = $this->__keySet($node->right, $res);
+        return array_merge($left, $right);
+    }
 
 
 }

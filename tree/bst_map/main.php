@@ -7,5 +7,9 @@ foreach(range(1,100) as $key => $value)
 {
     $map->add($key , $node);
 }
+/**
 $map->preOrder();
 var_dump($map->get(99));
+**/
+
+$map->keySet();

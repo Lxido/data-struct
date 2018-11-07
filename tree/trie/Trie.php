@@ -46,7 +46,6 @@ class Trie
             $cur->isWord = true;
             $this->size ++;
         }
-        print_r($this->root);
     }
     //查找是否存在
     public function contains(string $word):bool
@@ -77,7 +76,7 @@ class Trie
     }
     public function search($word)
     {
-        return $this->match($this->root , $word,$index);
+        return $this->match($this->root , $word,0);
     }
     public function match($node , $word , $index)
     {
@@ -87,15 +86,17 @@ class Trie
         if($c != '.')
         {
             if($node->next->get($c) == null)
-            {
                 return false;
-            }
             return $this->match($node->next->get($c) , $word,$index + 1);
         }else
         {
-            for()
+            foreach($node->next->keySet() as $k => $v)
+            {
+                if($this->match($node->next->get($v),$word , $index+1))
+                    return true;
+                return false;
+            }
         }
-
 
     }
 
