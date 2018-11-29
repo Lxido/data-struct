@@ -137,7 +137,7 @@ class AvlTree
         if($balanceFactor < -1 && $this->getBalanceFactor($node->right) <=0 )
             return  $this->leftRotate($node);
         //不平衡 LR
-        if($balanceFactor > 1 && $this->getBalanceFacto($node->left) <0 )
+        if($balanceFactor > 1 && $this->getBalanceFactor($node->left) <0 )
         {
             $node->left = $this->leftRotate($node->left);
             return  $this->rightRotate($node);
@@ -229,25 +229,6 @@ class AvlTree
         }
         return $this->__max($node->right);
     }
-    //删除最大值
-    public function removeMin()
-    {
-        $ret = $this->mini();
-        $this->root = $this->__removeMin($this->root);
-        return $ret;
-    }
-    private function __removeMin(Node $node)
-    {
-        if($node->left == null)
-        {
-            $rightNode = $node->right;
-            $node->right = null;
-            $this->size --;
-            return $rightNode;
-        }
-        $node->left = $this->__removeMin($node->left);
-        return $node;
-    }
     public function removeMax()
     {
         $ret = $this->max();
@@ -271,23 +252,24 @@ class AvlTree
         $node = $this->getNode($this->root ,$key);
         if($node != null)
         {
-            $node = $this->__remove($this->root ,$key);
+            $this->root = $this->__remove($this->root ,$key);
             return $node->value;
         }
         return null;
     }
-    private function __remove(Node $node ,$key):Node
+    private function __remove(Node $node ,$key)
     {
         if($node == null)
             return null;
+        $retNode = null;//新增保存返回的节点值
         if($key < $node->key)
         {
             $node->left = $this->__remove($node->left ,$key);
-            return $node;
+            $retNode = $node;
         }else if($key > $node->key)
         {
             $node->right = $this->__remove($node->right ,$key);
-            return $node;
+            $retNode = $node;
         }else
         {
             if($node->left == null)
@@ -295,23 +277,59 @@ class AvlTree
                 $rightNode = $node->right;
                 $node->right = null;
                 $this->size --;
-                return $rightNode;
+                $retNode =  $rightNode;
             }
-            if($node->right == null)
+            else if($node->right == null)
             {
                 $leftNode = $node->right;
                 $node->left = null;
                 $this->size --;
-                return $leftNode;
+                $retNode =  $leftNode;
+            }else
+            {
+                /**
+                *左右子树都不为空
+                *找到比待删除节点大的最小节点，即右子树的最小节点
+                *用这个几点顶替待删除节点的位置
+                */
+                $successor = $this->__mini($node->right);
+                $successor->right = $this->__remove($node->right,$successor->key);
+                $successor->left = $node->left;
+                $node->left = null;
+                $node->right = null;
+                $retNode =  $successor;
             }
-            //左右子树都不为空
-            $successor = $this->__mini($node->right);
-            $successor->right = $this->__removeMin($node->right);
-            $successor->left = $node->left;
-            $node->left = null;
-            $node->right = null;
-            return $successor;
         }
+        //可能为空的情况
+        if($retNode == null)
+            return null;
+        //在不平衡的儿粉搜搜树的处理中 这里在递归直接返回 return $retNode
+        //而avl树中需要保持树的平衡性 所以这里需要检测retNode是否平衡
+
+        //更新高度
+        $retNode->height = 1 + max($this->getHeight($retNode->left),$this->getHeight($retNode->right));
+        //计算平衡因子
+        $balanceFactor = $this->getBalanceFactor($retNode);
+        //不平衡 左旋转 LL
+        if($balanceFactor > 1 && $this->getBalanceFactor($retNode->left) >= 0 )
+           return   $this->rightRotate($retNode);
+        //不平衡 右旋转 RR
+        if($balanceFactor < -1 && $this->getBalanceFactor($retNode->right) <=0 )
+            return  $this->leftRotate($retNode);
+        //不平衡 LR
+        if($balanceFactor > 1 && $this->getBalanceFactor($retNode->left) <0 )
+        {
+            $retNode->left = $this->leftRotate($retNode->left);
+            return  $this->rightRotate($retNode);
+        }
+        //不平衡 RL
+        if($balanceFactor < -1 && $this->getBalanceFactor($retNode->right) > 0 )
+        {
+            $retNode->right = $this->rightRotate($retNode->right);
+            return $this->leftRotate($retNode);
+        }
+        return $retNode;
+
     }
     public function preOrder()
     {
