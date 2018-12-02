@@ -165,19 +165,13 @@ class AvlTree
     private function getNode(?Node $node ,$key)
     {
         if($node == null)
-        {
             return false;
-        }
         if($key == $node->key)
-        {
             return $node;
-        }else if($key < $node->key)
-        {
+        else if($key < $node->key)
             return $this->getNode($node->left,$key);
-        }else
-        {
+        else
             return $this->getNode($node->right,$key);
-        }
     }
 
 
@@ -191,42 +185,32 @@ class AvlTree
     {
         $node = $this->getNode($this->root,$key);
         if(!$node)
-        {
             throw new Exception("doesn't exist");
-        }
         $node->value = $value;
     }
     //返回最小最大的树
     public function mini()
     {
         if($this->size == 0)
-        {
             throw new Exception("Bst is empty");
-        }
         return $this->__mini($this->root)->e;
     }
     private function __mini(Node $node)
     {
         if($node->left == null)
-        {
             return $node;
-        }
         return $this->__mini($node->left);
     }
     public function max()
     {
         if($this->size == 0)
-        {
             throw new Exception("Bst is empty");
-        }
         return $this->__max($this->root)->e;
     }
     private function __max(Node $node)
     {
         if($node->right == null)
-        {
             return $node;
-        }
         return $this->__max($node->right);
     }
     public function removeMax()
@@ -338,9 +322,7 @@ class AvlTree
     public function __order(?Node $node)
     {
         if($node == null)
-        {
             return;
-        }
         echo $node->key."---";
         var_dump($node->value);
         $this->__order($node->left);
