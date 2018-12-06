@@ -33,4 +33,8 @@ class AvlMap
     {
         return $this->get($k);
     }
+    public function keySet()
+    {
+        return $this->avl->keySet();
+    }
 }
